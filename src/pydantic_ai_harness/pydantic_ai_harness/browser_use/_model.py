@@ -70,10 +70,7 @@ def _image_content(image_url: ImageURL) -> ImageUrl | BinaryContent:
     data URLs as remote URLs); anything else stays a URL reference.
     """
     if image_url.url.startswith('data:'):
-        content = BinaryContent.from_data_uri(image_url.url)
-        if not content.media_type:
-            content = BinaryContent(data=content.data, media_type=image_url.media_type)
-        return content
+        return BinaryContent.from_data_uri(image_url.url, image_url.media_type)
     return ImageUrl(url=image_url.url)
 
 

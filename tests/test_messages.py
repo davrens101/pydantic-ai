@@ -652,6 +652,20 @@ def test_from_data_uri_default_media_type_rfc2397():
     assert bc_charset.data == b'Hello'
 
 
+def test_from_data_uri_media_type_fallback():
+    # A media type supplied by the caller fills in a data URI that omits its own.
+    bc = BinaryContent.from_data_uri('data:;base64,SGVsbG8=', 'image/png')
+    assert bc.media_type == 'image/png'
+
+    # The data URI's own media type wins over the fallback.
+    bc = BinaryContent.from_data_uri('data:image/jpeg;base64,SGVsbG8=', 'image/png')
+    assert bc.media_type == 'image/jpeg'
+
+    # A parameter-only media type keeps its parameters on the fallback.
+    bc = BinaryContent.from_data_uri('data:;charset=utf-8;base64,SGVsbG8=', 'image/png')
+    assert bc.media_type == 'image/png;charset=utf-8'
+
+
 def test_from_data_uri_non_base64():
     with pytest.raises(ValueError, match='must be base64-encoded'):
         BinaryContent.from_data_uri('data:text/plain,Hello%20World')

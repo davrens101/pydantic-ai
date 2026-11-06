@@ -844,20 +844,24 @@ class BinaryContent:
             return bc
 
     @classmethod
-    def from_data_uri(cls, data_uri: str) -> BinaryContent:
-        """Create a `BinaryContent` from a data URI."""
+    def from_data_uri(cls, data_uri: str, media_type: str | None = None) -> BinaryContent:
+        """Create a `BinaryContent` from a data URI.
+
+        If the data URI omits its media type, `media_type` is used when provided; otherwise RFC 2397's
+        `text/plain;charset=US-ASCII` default applies.
+        """
         prefix = 'data:'
         if not data_uri.startswith(prefix):
             raise ValueError('Data URI must start with "data:"')
         body = data_uri[len(prefix) :]
         if ';base64,' not in body:
             raise ValueError('Data URI must be base64-encoded (expected ";base64," marker)')
-        media_type, data = body.split(';base64,', 1)
-        if not media_type:
-            media_type = 'text/plain;charset=US-ASCII'
-        elif media_type.startswith(';'):
-            media_type = f'text/plain{media_type}'
-        return cls.narrow_type(cls(data=base64.b64decode(unquote_to_bytes(data)), media_type=media_type))
+        uri_media_type, data = body.split(';base64,', 1)
+        if not uri_media_type:
+            uri_media_type = media_type or 'text/plain;charset=US-ASCII'
+        elif uri_media_type.startswith(';'):
+            uri_media_type = f'{media_type or "text/plain"}{uri_media_type}'
+        return cls.narrow_type(cls(data=base64.b64decode(unquote_to_bytes(data)), media_type=uri_media_type))
 
     @classmethod
     def from_path(cls, path: PathLike[str]) -> BinaryContent:

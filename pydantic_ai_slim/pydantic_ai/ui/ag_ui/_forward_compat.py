@@ -112,7 +112,7 @@ def _translate_binary_part(item: dict[str, JsonValue]) -> dict[str, JsonValue] |
     source: dict[str, JsonValue]
     if isinstance(url, str) and url:
         try:
-            inlined = BinaryContent.from_data_uri(url)
+            inlined = BinaryContent.from_data_uri(url, mime_type)
         except ValueError:  # not a base64 data URI, so it stays a URL, as in the legacy loader
             source = {'type': 'url', 'value': url, 'mimeType': mime_type}
         else:

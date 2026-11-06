@@ -251,7 +251,7 @@ def _input_content_to_user_content(
                 # but an install below 1.0 still sends it.
                 if part.url:
                     try:
-                        converted.append(BinaryContent.from_data_uri(part.url))
+                        converted.append(BinaryContent.from_data_uri(part.url, part.mime_type))
                     except ValueError:
                         media_type_constructors = {'image': ImageUrl, 'video': VideoUrl, 'audio': AudioUrl}
                         constructor = media_type_constructors.get(part.mime_type.split('/', 1)[0], DocumentUrl)

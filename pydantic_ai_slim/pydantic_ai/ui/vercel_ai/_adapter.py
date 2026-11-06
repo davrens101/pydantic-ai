@@ -450,7 +450,7 @@ class VercelAIAdapter(UIAdapter[RequestData, UIMessage, BaseChunk, AgentDepsT, O
                         vendor_metadata = provider_meta.get('vendor_metadata')
                         force_download = provider_meta.get('force_download', False)
                         try:
-                            file = BinaryContent.from_data_uri(part.url)
+                            file = BinaryContent.from_data_uri(part.url, part.media_type)
                         except ValueError:
                             # Check provider_metadata for UploadedFile data
                             uploaded_file_id = provider_meta.get('file_id')
@@ -576,7 +576,7 @@ class VercelAIAdapter(UIAdapter[RequestData, UIMessage, BaseChunk, AgentDepsT, O
                         )
                     elif isinstance(part, FileUIPart):
                         try:
-                            file = BinaryContent.from_data_uri(part.url)
+                            file = BinaryContent.from_data_uri(part.url, part.media_type)
                         except ValueError as e:  # pragma: no cover
                             # We don't yet handle non-data-URI file URLs returned by assistants, as no Pydantic AI models do this.
                             raise ValueError(
